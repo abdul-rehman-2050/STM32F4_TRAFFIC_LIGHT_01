@@ -22,22 +22,18 @@
 #define IR_PROXY_CLK	RCC_AHB1Periph_GPIOE
 #define IR_PROXY_PIN	GPIO_Pin_5
 
-
+uint8_t flag_state5 = 0;
 
 void delay_ms(uint32_t ms){
-	ms *= 20000;
+	ms *= 2000;
 	while(ms--){
-		  while(!GPIO_ReadInputDataBit(IR_PROXY_PORT,IR_PROXY_PIN)){
-			  uint32_t i=0;
-			  //Fourth Pattern [Signal is Yellow ]
-				 GPIO_ResetBits(LED_PORT,LED_Red);
-				 GPIO_ToggleBits(LED_PORT,LED_Yellow);
-				 GPIO_ResetBits(LED_PORT,LED_Green);
-				 for(i=0;i<20000000;i++){
-					 __NOP();
-				 }
-			  }
-
+		if(flag_state5 < 2){
+			if(!GPIO_ReadInputDataBit(IR_PROXY_PORT,IR_PROXY_PIN)){
+				flag_state5=1;
+				return;
+			}
+		}
+		 __NOP();
 	}
 }
 
@@ -95,6 +91,17 @@ int main(void)
 	  GPIO_ResetBits(LED_PORT,LED_Green);
 	  delay_ms(1000);
 
+	  if(flag_state5>0){
+		  while(!GPIO_ReadInputDataBit(IR_PROXY_PORT,IR_PROXY_PIN)){
+			  flag_state5=2;
+			  GPIO_ResetBits(LED_PORT,LED_Red);
+			  GPIO_ToggleBits(LED_PORT,LED_Yellow);
+			  GPIO_ResetBits(LED_PORT,LED_Green);
+			  delay_ms(1000);
+		  }
+		  flag_state5=0;
+
+	  }
 
 
 
