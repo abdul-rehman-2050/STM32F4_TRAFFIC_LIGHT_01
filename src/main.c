@@ -27,7 +27,17 @@
 void delay_ms(uint32_t ms){
 	ms *= 20000;
 	while(ms--){
-		__NOP();
+		  while(!GPIO_ReadInputDataBit(IR_PROXY_PORT,IR_PROXY_PIN)){
+			  uint32_t i=0;
+			  //Fourth Pattern [Signal is Yellow ]
+				 GPIO_ResetBits(LED_PORT,LED_Red);
+				 GPIO_ToggleBits(LED_PORT,LED_Yellow);
+				 GPIO_ResetBits(LED_PORT,LED_Green);
+				 for(i=0;i<20000000;i++){
+					 __NOP();
+				 }
+			  }
+
 	}
 }
 
@@ -85,13 +95,6 @@ int main(void)
 	  GPIO_ResetBits(LED_PORT,LED_Green);
 	  delay_ms(1000);
 
-	  while(!GPIO_ReadInputDataBit(IR_PROXY_PORT,IR_PROXY_PIN)){
-		  //Fourth Pattern [Signal is Yellow ]
-		 GPIO_ResetBits(LED_PORT,LED_Red);
-		 GPIO_ToggleBits(LED_PORT,LED_Yellow);
-		 GPIO_ResetBits(LED_PORT,LED_Green);
-		 delay_ms(1000);
-	  }
 
 
 
